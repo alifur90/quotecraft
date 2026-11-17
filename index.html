@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuoteCraft - Premium Quotation Maker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+    <header class="mobile-header hide-on-print">
+        <div class="logo" style="display:flex; align-items:center; gap:8px;">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 10C27.9 10 10 27.9 10 50C10 72.1 27.9 90 50 90C59.3 90 67.8 86.8 74.6 81.5L87.5 90L82.1 76C87.3 68.9 90 60 90 50C90 27.9 72.1 10 50 10ZM50 74C36.8 74 26 63.2 26 50C26 36.8 36.8 26 50 26C63.2 26 74 36.8 74 50C74 63.2 63.2 74 50 74Z"/>
+                <path d="M54 48L65 59C68 62 68 66 65 69C62 72 58 72 55 69L44 58C43.5 57.5 43 57 43 56V48H54Z"/>
+            </svg>
+            QuoteCraft
+        </div>
+        <button id="mobile-menu-btn" class="icon-btn" aria-label="Open Menu"><i class="ph ph-list"></i></button>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar hide-on-print" id="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo" style="display:flex; align-items:center; gap:8px;">
+                    <svg width="32" height="32" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 10C27.9 10 10 27.9 10 50C10 72.1 27.9 90 50 90C59.3 90 67.8 86.8 74.6 81.5L87.5 90L82.1 76C87.3 68.9 90 60 90 50C90 27.9 72.1 10 50 10ZM50 74C36.8 74 26 63.2 26 50C26 36.8 36.8 26 50 26C63.2 26 74 36.8 74 50C74 63.2 63.2 74 50 74Z"/>
+                        <path d="M54 48L65 59C68 62 68 66 65 69C62 72 58 72 55 69L44 58C43.5 57.5 43 57 43 56V48H54Z"/>
+                    </svg>
+                    QuoteCraft
+                </h1>
+                <button id="close-sidebar-btn" class="icon-btn mobile-only" aria-label="Close Menu"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" data-view="dashboard" class="active"><i class="ph ph-squares-four"></i> Dashboard</a></li>
+                <li><a href="#" data-view="create"><i class="ph ph-plus-circle"></i> Create Quotation</a></li>
+                <li><a href="#" data-view="quotations"><i class="ph ph-file-text"></i> My Quotations</a></li>
+                <li><a href="#" data-view="templates"><i class="ph ph-palette"></i> Templates</a></li>
+                <li><a href="#" data-view="profile"><i class="ph ph-buildings"></i> Business Profile</a></li>
+                <li><a href="#" data-view="settings"><i class="ph ph-gear"></i> Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <section id="view-dashboard" class="view active hide-on-print">
+                <header class="view-header">
+                    <div><h2>Dashboard</h2><p class="text-muted">Manage and create professional quotations.</p></div>
+                    <button class="btn btn-primary" onclick="app.switchView('create'); app.resetForm();"><i class="ph ph-plus"></i> New Quotation</button>
+                </header>
+                <div class="dashboard-stats">
+                    <div class="stat-card dark-card"><h3>Total Revenue</h3><p class="stat-value" id="stat-revenue">0.00</p></div>
+                    <div class="stat-card"><h3>Total Quotations</h3><p class="stat-value" id="stat-total">0</p></div>
+                    <div class="stat-card"><h3>Completed</h3><p class="stat-value" id="stat-completed">0</p></div>
+                </div>
+                <div class="recent-quotations">
+                    <h3 class="mb-3">Recent Quotations</h3>
+                    <div class="empty-state" id="dashboard-empty-state">
+                        <i class="ph ph-file-dashed empty-icon"></i><h4>No quotations yet</h4>
+                        <button class="btn btn-secondary mt-3" onclick="app.switchView('create'); app.resetForm();">Create Quotation</button>
+                    </div>
+                    <div class="table-container hidden" id="dashboard-table-container">
+                        <table class="data-table">
+                            <thead><tr><th>Number</th><th>Client</th><th>Date</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+                            <tbody id="recent-quotations-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Create Quotation -->
+            <section id="view-create" class="view hide-on-print">
+                <header class="view-header">
+                    <div><h2 id="create-view-title">Create Quotation</h2></div>
+                    <div class="header-actions">
+                        <button class="btn btn-secondary" onclick="app.printPreview()"><i class="ph ph-printer"></i> Print</button>
+                        <button class="btn btn-secondary" onclick="app.exportPDF()"><i class="ph ph-download-simple"></i> PDF</button>
+                        <button class="btn btn-primary" onclick="app.saveQuotation('completed')"><i class="ph ph-floppy-disk"></i> Save</button>
+                    </div>
+                </header>
+
+                <div class="create-split-layout">
+                    <!-- Form Panel -->
+                    <div class="editor-panel">
+                        <form id="quotation-form" onsubmit="event.preventDefault();">
+                            <input type="hidden" id="quote-id">
+                            
+                            <div class="form-card">
+                                <h3><i class="ph ph-info"></i> Details & Currency</h3>
+                                <div class="form-row col-2">
+                                    <div class="form-group"><label>Quotation Number *</label><input type="text" id="quote-number" required></div>
+                                    <div class="form-group"><label>Currency</label><select id="quote-currency">
+                                        <option value="BDT">BDT (৳)</option><option value="USD">USD ($)</option>
+                                        <option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option>
+                                        <option value="INR">INR (₹)</option>
+                                    </select></div>
+                                </div>
+                                <div class="form-group"><label>Project Title</label><input type="text" id="quote-title"></div>
+                                <div class="form-row col-2">
+                                    <div class="form-group"><label>Issue Date *</label><input type="date" id="quote-issue-date" required></div>
+                                    <div class="form-group"><label>Valid Until *</label><input type="date" id="quote-expiry-date" required></div>
+                                </div>
+                            </div>
+
+                            <div class="form-card">
+                                <h3><i class="ph ph-users"></i> Business & Client</h3>
+                                <h4>From: (Your Business)</h4>
+                                <div class="form-group"><label>Business Name *</label><input type="text" id="business-name" required></div>
+                                <div class="form-row col-2">
+                                    <div class="form-group"><label>Email</label><input type="email" id="business-email"></div>
+                                    <div class="form-group"><label>Phone</label><input type="tel" id="business-phone"></div>
+                                </div>
+                                <div class="form-group"><label>Address</label><textarea id="business-address" rows="1"></textarea></div>
+                                
+                                <h4 class="mt-3">To: (Client)</h4>
+                                <div class="form-group"><label>Client Name *</label><input type="text" id="client-name" required></div>
+                                <div class="form-row col-2">
+                                    <div class="form-group"><label>Email</label><input type="email" id="client-email"></div>
+                                    <div class="form-group"><label>Phone</label><input type="tel" id="client-phone"></div>
+                                </div>
+                                <div class="form-group"><label>Address</label><textarea id="client-address" rows="1"></textarea></div>
+                            </div>
+
+                            <div class="form-card">
+                                <h3><i class="ph ph-list-numbers"></i> Products & Services</h3>
+                                <div class="items-table-wrapper">
+                                    <table class="items-editor-table" id="items-table">
+                                        <thead><tr><th>Description</th><th>Qty</th><th>Price</th><th>Total</th><th></th></tr></thead>
+                                        <tbody id="items-tbody"></tbody>
+                                    </table>
+                                </div>
+                                <button type="button" class="btn btn-secondary mt-2" onclick="app.addLineItem()"><i class="ph ph-plus"></i> Add Item</button>
+                            </div>
+
+                            <div class="form-card calculations-card">
+                                <h3><i class="ph ph-calculator"></i> Totals & Terms</h3>
+                                <div class="totals-grid">
+                                    <div class="terms-col">
+                                        <div class="form-group"><label>Terms & Conditions</label><textarea id="quote-terms" rows="2" placeholder="Payment terms..."></textarea></div>
+                                        <div class="form-group"><label>Additional Notes</label><textarea id="quote-notes" rows="2"></textarea></div>
+                                    </div>
+                                    <div class="calc-col">
+                                        <div class="calc-row"><span>Subtotal:</span><span id="calc-subtotal">0.00</span></div>
+                                        <div class="calc-row">
+                                            <span>Discount:
+                                                <select id="discount-type"><option value="amount">Fixed</option><option value="percent">%</option></select>
+                                            </span>
+                                            <input type="number" id="discount-value" value="0" min="0" step="0.01">
+                                        </div>
+                                        <div class="calc-row"><span>Tax/VAT (%):</span><input type="number" id="tax-rate" value="0" min="0" step="0.1"></div>
+                                        <div class="calc-row"><span>Extra Charges:</span><input type="number" id="extra-charge" value="0" min="0" step="0.01"></div>
+                                        <div class="calc-row grand-total"><span>Grand Total:</span><span id="calc-grand-total">0.00</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Live Preview Panel -->
+                    <div class="preview-panel">
+                        <div class="preview-header"><h4>Live Preview</h4> 
+                            <select id="preview-template-selector" onchange="app.changeTemplate(this.value)">
+                                <option value="template-minimal">Minimal</option>
+                                <option value="template-modern">Modern</option>
+                                <option value="template-corporate">Corporate</option>
+                                <option value="template-creative">Creative</option>
+                                <option value="template-elegant">Elegant</option>
+                            </select>
+                        </div>
+                        <div class="a4-container-wrapper">
+                            <div id="a4-preview" class="a4-document template-minimal">
+                                <div class="doc-header">
+                                    <div class="doc-brand">
+                                        <img id="doc-logo" src="" alt="" style="display:none; max-width:120px; max-height:60px;">
+                                        <h1 id="doc-business-name">Business Name</h1>
+                                        <p id="doc-business-contact"></p>
+                                    </div>
+                                    <div class="doc-meta">
+                                        <h2 id="doc-title-display">QUOTATION</h2>
+                                        <p><strong>Quote #:</strong> <span id="doc-quote-number"></span></p>
+                                        <p><strong>Date:</strong> <span id="doc-issue-date"></span></p>
+                                        <p><strong>Valid Until:</strong> <span id="doc-expiry-date"></span></p>
+                                    </div>
+                                </div>
+                                <div class="doc-client">
+                                    <h3>Quotation For:</h3>
+                                    <p><strong id="doc-client-name">Client Name</strong></p>
+                                    <p id="doc-client-contact"></p>
+                                </div>
+                                <table class="doc-items-table">
+                                    <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th class="text-right">Total</th></tr></thead>
+                                    <tbody id="doc-items-body"></tbody>
+                                </table>
+                                <div class="doc-totals">
+                                    <div class="doc-totals-row"><span>Subtotal:</span><span id="doc-subtotal"></span></div>
+                                    <div class="doc-totals-row" id="doc-discount-row"><span>Discount:</span><span id="doc-discount"></span></div>
+                                    <div class="doc-totals-row" id="doc-tax-row"><span>Tax:</span><span id="doc-tax"></span></div>
+                                    <div class="doc-totals-row" id="doc-extra-row"><span>Extra Charge:</span><span id="doc-extra"></span></div>
+                                    <div class="doc-totals-row doc-grand-total"><span>Grand Total:</span><span id="doc-grand-total"></span></div>
+                                </div>
+                                <div class="doc-footer">
+                                    <div id="doc-terms-block"><h4>Terms & Conditions</h4><p id="doc-terms"></p></div>
+                                    <div id="doc-notes-block" style="margin-top:10px;"><h4>Notes</h4><p id="doc-notes"></p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- My Quotations -->
+            <section id="view-quotations" class="view hide-on-print">
+                <header class="view-header"><h2>My Quotations</h2></header>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead><tr><th>Number</th><th>Client</th><th>Date</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+                        <tbody id="all-quotations-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Templates -->
+            <section id="view-templates" class="view hide-on-print">
+                <header class="view-header"><h2>Templates</h2><p class="text-muted">Choose your default document style.</p></header>
+                <div class="template-grid">
+                    <div class="template-card" onclick="app.setDefaultTemplate('template-minimal')"><h3>Minimal</h3><div class="mock-doc minimal"></div></div>
+                    <div class="template-card" onclick="app.setDefaultTemplate('template-modern')"><h3>Modern</h3><div class="mock-doc modern"></div></div>
+                    <div class="template-card" onclick="app.setDefaultTemplate('template-corporate')"><h3>Corporate</h3><div class="mock-doc corporate"></div></div>
+                    <div class="template-card" onclick="app.setDefaultTemplate('template-creative')"><h3>Creative</h3><div class="mock-doc creative"></div></div>
+                    <div class="template-card" onclick="app.setDefaultTemplate('template-elegant')"><h3>Elegant</h3><div class="mock-doc elegant"></div></div>
+                </div>
+            </section>
+
+            <!-- Profile -->
+            <section id="view-profile" class="view hide-on-print">
+                <header class="view-header"><h2>Business Profile</h2></header>
+                <div class="form-card" style="max-width: 600px;">
+                    <div class="form-group logo-upload-group">
+                        <label>Company Logo</label>
+                        <div class="logo-preview-area" id="profile-logo-area">
+                            <img id="profile-logo-img" src="" alt="Logo" class="hidden" style="max-width:100%; max-height:100%;">
+                            <i class="ph ph-image text-muted" id="profile-logo-icon" style="font-size: 2rem;"></i>
+                        </div>
+                        <input type="file" id="profile-logo" accept="image/*" class="hidden">
+                        <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="document.getElementById('profile-logo').click()">Upload Logo</button>
+                    </div>
+                    <div class="form-group"><label>Business Name</label><input type="text" id="prof-name"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="prof-email"></div>
+                    <div class="form-group"><label>Phone</label><input type="tel" id="prof-phone"></div>
+                    <div class="form-group"><label>Address</label><textarea id="prof-address" rows="2"></textarea></div>
+                    <div class="form-group"><label>Website</label><input type="url" id="prof-website"></div>
+                    <button class="btn btn-primary mt-3" onclick="app.saveProfile()">Save Profile</button>
+                </div>
+            </section>
+            
+            <!-- Settings -->
+            <section id="view-settings" class="view hide-on-print">
+                <header class="view-header"><h2>Settings</h2></header>
+                <div class="form-card" style="max-width: 600px;">
+                    <button class="btn btn-secondary" style="color:white; background:#ef4444; border-color:#ef4444;" onclick="app.clearAllData()">Clear All App Data</button>
+                    <p class="text-muted mt-2" style="font-size:0.8rem;">Warning: This will delete all saved quotations from this browser.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <div id="modal-container"></div>
+    <div id="print-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
