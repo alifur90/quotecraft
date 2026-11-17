@@ -2,6 +2,8 @@
 A premium, client-side web application for creating, managing, and exporting professional business quotations as PDFs.
 # QuoteCraft - Premium Quotation Maker
 
+**[🚀 View Live Demo: https://alifur90.github.io/quotecraft/](https://alifur90.github.io/quotecraft/)**
+
 QuoteCraft is a fast, beautiful, and completely client-side web application designed for freelancers, agencies, and small businesses to generate professional quotations effortlessly. It works directly in the browser without requiring any login, backend, or database.
 
 ## ✨ Key Features
@@ -24,7 +26,7 @@ QuoteCraft is a fast, beautiful, and completely client-side web application desi
 * **html2pdf.js:** For client-side PDF generation.
 * **Phosphor Icons:** For clean, modern UI icons.
 
-## 🚀 How to Use
+## 🚀 How to Use (Local Setup)
 
 Since QuoteCraft is a purely frontend application, you don't need to install any dependencies or local servers.
 
